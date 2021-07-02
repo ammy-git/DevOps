@@ -1,0 +1,116 @@
+Server: ubuntu 20.04
+===================
+java jdk
+---------
+url : https://linuxbuz.com/linuxhowto/install-java-8-ubuntu
+
+maven 
+-------
+url: https://linuxize.com/post/how-to-install-apache-maven-on-ubuntu-20-04/
+
+jenkins
+--------
+https://www.digitalocean.com/community/tutorials/how-to-install-jenkins-on-ubuntu-20-04
+version: 2.289.2
+Required: 2.284
+
+username: admin
+password: admin123
+
+jenkins version change with war file
+----------------------------------------
+url : https://stackoverflow.com/questions/11062335/update-jenkins-from-a-war-file
+
+jenkins all version download as war file
+------------------------------------------
+https://updates.jenkins.io/download/war/
+2.284 war file link
+https://updates.jenkins.io/download/war/2.284/jenkins.war
+
+
+1) Create fitsr job:
+----------------------
+ console output 
+	Error: java.lang.NoSuchMethodError: No such DSL method 'pipeline' found among step
+ solution: 
+	install pipeline plugin
+
+2) My Maven job with  jdk8
+------------------------------------
+ github url: https://github.com/AyazuddinEjazuddin/my-maven-app.git
+
+3) My Maven job with  jdk11
+-------------------------------------
+ a) github url: https://github.com/AyazuddinEjazuddin/my-maven-app-jdk11.git
+     branch: main
+ b) github url: https://github.com/neiljbrown/java11-examples
+     branch: master
+
+java path command line
+-------------------------
+readlink -e $(which java)
+
+jdk8: /usr/lib/jvm/java-8-openjdk-amd64/
+   
+jdk11: /usr/lib/jvm/java-11-openjdk-amd64/
+ 
+
+List all java version
+-------------------------
+update-java-alternatives -l
+java-1.11.0-openjdk-amd64      1111       /usr/lib/jvm/java-1.11.0-openjdk-amd64
+java-1.8.0-openjdk-amd64       1081       /usr/lib/jvm/java-1.8.0-openjdk-amd64
+
+To set JAVA_HOME temporary locally by commandline
+----------------------------------------------------------------
+export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64/
+echo $JAVA_HOME
+
+export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/
+echo $JAVA_HOME
+
+export JAVA_HOME=
+echo $JAVA_HOME
+
+Check current java version
+---------------------------
+java -version
+
+Check current javac version
+---------------------------
+javac -version 
+
+Pipeline
+-------------
+//def GitHub_Url = 'https://github.com/AyazuddinEjazuddin/my-maven-app-jdk11.git'
+//def GitHub_Branch = 'main'
+def GitHub_Url = 'https://github.com/neiljbrown/java11-examples.git'
+def GitHub_Branch = 'master'
+
+pipeline {
+    agent any
+    options { skipDefaultCheckout() }
+    environment {
+        PATH = "/usr/share/maven/bin:$PATH"
+        //JAVA_HOME = "/usr/lib/jvm/java-8-openjdk-amd64/"
+        JAVA_HOME = "/usr/lib/jvm/java-11-openjdk-amd64/"
+    }
+    
+    stages {
+        stage('Git Checkout') { 
+            steps {
+               //git branch: "${GitHub_Branch}", credentialsId: 'Ayaz-xoriant-git', url: "${GitHub_Url}"
+                git branch: "${GitHub_Branch}", url: "${GitHub_Url}"
+            }
+        }
+        
+        stage('Maven Build') { 
+            steps {
+                sh "mvn clean install"
+            }
+        }
+        
+        
+    }
+}
+
