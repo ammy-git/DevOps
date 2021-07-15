@@ -1,0 +1,56 @@
+On AWS
+----------
+AMI: Ubuntu 20.04 LTS
+Instance type: t2.medium
+Tags: 
+	Key: Name
+	Value: Jfrog-Server
+Security_group: Jfrog-SG
+	SSH		TCP	22 						0.0.0.0/0
+	HTTP		TCP 	80						0.0.0.0/0
+	Custom TCP 	TCP	8081 (for Artifactory REST APIs.)				0.0.0.0/0
+	Custom TCP	TCP	8082 ( for everything else (UI, and all other product’s APIs))	0.0.0.0/0
+
+On Jfrog-Server
+--------------
+1)  Become sudo user
+	sudo su -
+2) Update the package
+	sudo apt-get update -y
+3) Importing the GPG key used for signing the debian packages
+	sudo wget -qO - https://api.bintray.com/orgs/jfrog/keys/gpg/public.key | sudo apt-key add -
+4) Add JFrog Artifactory to Ubuntu 20.04
+	 echo "deb https://jfrog.bintray.com/artifactory-debs bionic main" | sudo tee /etc/apt/sources.list.d/jfrog.list
+5) Update APT index
+	sudo apt-get update -y
+6) Install JFrog Artifactory on Ubuntu 20.04
+	sudo apt-get install jfrog-artifactory-oss -y
+	Installtion Directory: /opt/jfrog/artifactory/
+7) Start, enable and check the status of service
+	sudo systemctl start artifactory.service
+	sudo systemctl enable artifactory.service
+	sudo systemctl status artifactory.service
+8) Access Artifactory Web Interface
+	http://<Jfrog-Server Public IP/Private IP>:8081/artifactory       
+		redirected to 
+	http://<Jfrog-Server Public IP/Private IP>:8082/ui/
+	(You should see Artifactory welcome page.)
+9) Check if service is running locally on 8081 port
+	curl localhost:8081
+10) Artifactory welcome page
+	a) The default logins are:
+		Username: admin
+		Password: password
+	b) Click the “Get Started” button.
+	c) Reset admin password by setting a new one. (Choose password according to you)
+		New Password: Admin123
+		Retype Password: Admin123
+	d) Skip the "Set the base URL" and "configure default proxy"
+	e) Summary (Finally Done)
+	
+	
+
+Ref Link: 
+-----------
+1) https://computingforgeeks.com/how-to-install-jfrog-artifactory-on-ubuntu-linux/
+2) https://www.coachdevops.com/2020/04/install-artifactory-on-ubuntu-setup.html
